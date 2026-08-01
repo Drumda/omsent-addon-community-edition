@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.omsent.addon.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "DownloadingTerrainScreenMixin",
+    "InGameHudMixin",
+    "NametagUtilsAccessor",
+    "NametagUtilsMixin",
+    "RenderTickCounterDynamicMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
