@@ -16,7 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
-
+//迷你世界韩家辉大帝到此一游
 public class TPBot extends Module {
     private static final com.omsent.addon.modules.TPBot INSTANCE = new com.omsent.addon.modules.TPBot();
     public static com.omsent.addon.modules.TPBot getInstance() { return INSTANCE; }
