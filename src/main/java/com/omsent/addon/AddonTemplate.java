@@ -33,6 +33,7 @@ public class AddonTemplate extends MeteorAddon {
         Modules.get().add(new AnchorHelper());
         Modules.get().add(new SetVel_qwq());
         Modules.get().add(new ChatEncrypt());
+        Modules.get().add(new AutoEz());
         //Modules.get().add(new FaceBlocker());
         //Modules.get().add(new AutoSwingGate());
         if(DebugUtils.isDebugMode()) {
