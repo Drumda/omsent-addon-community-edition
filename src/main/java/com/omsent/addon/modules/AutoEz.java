@@ -1,19 +1,22 @@
 package com.omsent.addon.modules;
 
 import com.omsent.addon.NModule;
-import meteordevelopment.meteorclient.events.packets.PacketEvent;
+import meteordevelopment.meteorclient.events.entity.EntityRemovedEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.entity.EntityUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+
+import java.util.Random;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class AutoEz extends NModule {
     private static final AutoEz INSTANCE = new AutoEz();
     public static AutoEz getInstance() { return INSTANCE; }
+
+    private static final String RANDOM_CHARS = "123456789abcdefghijklmnopqrstuvwxyz";
+    private static final Random random = new Random();
 
     private final SettingGroup sgGeneral = settings.createGroup("General");
 
@@ -27,37 +30,61 @@ public class AutoEz extends NModule {
         .build()
     );
 
-    private final Setting<String> customText = sgGeneral.add(new StringSetting.Builder()
-        .name("custom-text")
-        .description("Custom text sent after the player's name")
+    private final Setting<String> selfDeathText = sgGeneral.add(new StringSetting.Builder()
+        .name("self-death-text")
+        .description("Text sent when you die")
+        .defaultValue("gg")
+        .build()
+    );
+
+    private final Setting<String> otherDeathText = sgGeneral.add(new StringSetting.Builder()
+        .name("other-death-text")
+        .description("Text sent when another player dies in range")
         .defaultValue("ez")
         .build()
     );
 
+    private final Setting<Integer> randomLength = sgGeneral.add(new IntSetting.Builder()
+        .name("random-length")
+        .description("Length of random suffix appended to other death text (0 = disabled)")
+        .defaultValue(0)
+        .min(0)
+        .max(20)
+        .sliderRange(0, 20)
+        .build()
+    );
+
     public AutoEz() {
-        super("autoez", "Detects player death packets within range and sends a custom message");
+        super("autoez", "Detects player death and sends custom text");
     }
 
-    @Override
-    public void onActivate() {
-        if (!Main.enable) {
-            toggle();
-            return;
+    private static String generateRandom(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(RANDOM_CHARS.charAt(random.nextInt(RANDOM_CHARS.length())));
         }
+        return sb.toString();
     }
 
     @EventHandler
-    private void onReceivePacket(PacketEvent.Receive event) {
-        if (!(event.packet instanceof EntityStatusS2CPacket packet)) return;
-        if (packet.getStatus() != 3) return;
+    private void onEntityRemoved(EntityRemovedEvent event) {
+        if (mc.player == null || mc.getNetworkHandler() == null) return;
+        if (!(event.entity instanceof PlayerEntity player)) return;
 
-        Entity entity = packet.getEntity(mc.world);
-        if (!(entity instanceof PlayerEntity player)) return;
+        if (player == mc.player) {
+            mc.getNetworkHandler().sendChatMessage(selfDeathText.get());
+            return;
+        }
+
         if (!player.isDead()) return;
 
-        double distSq = mc.player.squaredDistanceTo(entity);
+        double distSq = mc.player.squaredDistanceTo(player);
         if (distSq > (double) range.get() * range.get()) return;
 
-        msg(EntityUtils.getName(player) + " " + customText.get());
+        String name = EntityUtils.getName(player);
+        if (name == null) return;
+
+        String suffix = randomLength.get() > 0 ? " " + generateRandom(randomLength.get()) : "";
+        mc.getNetworkHandler().sendChatMessage(name + " " + otherDeathText.get() + suffix);
     }
 }

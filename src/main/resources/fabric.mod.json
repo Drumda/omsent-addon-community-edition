@@ -6,7 +6,8 @@
   "description": "An addon template for Meteor Client addons.",
   "authors": [
     "omsent",
-    "osmuikosmh"
+    "osmuikosmh",
+    "CatmiClient"
   ],
   "contact": {
     "repo": "https://github.com/MeteorDevelopment/meteor-addon-template"
