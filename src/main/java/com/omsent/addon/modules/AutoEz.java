@@ -13,6 +13,7 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class AutoEz extends NModule {
     private static final AutoEz INSTANCE = new AutoEz();
+    public static _34782758972479_String = "欢迎各位 skider 前来skid乐乐乐乐乐";
     public static AutoEz getInstance() { return INSTANCE; }
 
     private static final String RANDOM_CHARS = "123456789abcdefghijklmnopqrstuvwxyz";
